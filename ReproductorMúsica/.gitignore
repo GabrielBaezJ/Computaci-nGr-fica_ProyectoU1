@@ -1,0 +1,7 @@
+# Ignorar carpetas de compilacion y archivos temporales de Visual Studio
+[Bb]in/
+[Oo]bj/
+.vs/
+*.suo
+*.user
+*.pdb

@@ -16,5 +16,10 @@ namespace ReproductorMúsica
         {
             InitializeComponent();
         }
+
+        private void frmMusicPlayer_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
