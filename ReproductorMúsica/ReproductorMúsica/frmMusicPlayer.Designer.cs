@@ -36,6 +36,8 @@
             this.btnForward = new System.Windows.Forms.Button();
             this.btnPlayPause = new System.Windows.Forms.Button();
             this.picCanvas = new System.Windows.Forms.PictureBox();
+            this.btnUpload = new System.Windows.Forms.Button();
+            this.txtFileName = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.SuspendLayout();
             // 
@@ -43,7 +45,7 @@
             // 
             this.progressBar1.Location = new System.Drawing.Point(9, 587);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(1085, 17);
+            this.progressBar1.Size = new System.Drawing.Size(1037, 17);
             this.progressBar1.TabIndex = 1;
             // 
             // btnReplay
@@ -99,11 +101,30 @@
             this.picCanvas.TabIndex = 0;
             this.picCanvas.TabStop = false;
             // 
+            // btnUpload
+            // 
+            this.btnUpload.Image = ((System.Drawing.Image)(resources.GetObject("btnUpload.Image")));
+            this.btnUpload.Location = new System.Drawing.Point(12, 619);
+            this.btnUpload.Name = "btnUpload";
+            this.btnUpload.Size = new System.Drawing.Size(47, 57);
+            this.btnUpload.TabIndex = 7;
+            this.btnUpload.UseVisualStyleBackColor = true;
+            // 
+            // txtFileName
+            // 
+            this.txtFileName.Enabled = false;
+            this.txtFileName.Location = new System.Drawing.Point(65, 646);
+            this.txtFileName.Name = "txtFileName";
+            this.txtFileName.Size = new System.Drawing.Size(100, 20);
+            this.txtFileName.TabIndex = 8;
+            // 
             // frmMusicPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1155, 687);
+            this.Controls.Add(this.txtFileName);
+            this.Controls.Add(this.btnUpload);
             this.Controls.Add(this.btnReplay);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnBackward);
@@ -119,6 +140,7 @@
             this.Load += new System.EventHandler(this.frmMusicPlayer_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -131,5 +153,7 @@
         private System.Windows.Forms.Button btnBackward;
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Button btnReplay;
+        private System.Windows.Forms.Button btnUpload;
+        private System.Windows.Forms.TextBox txtFileName;
     }
 }
