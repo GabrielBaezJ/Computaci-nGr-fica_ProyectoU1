@@ -31,17 +31,20 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMusicPlayer));
             this.pgProgress = new System.Windows.Forms.ProgressBar();
+            this.txtFileName = new System.Windows.Forms.TextBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.lblTimer = new System.Windows.Forms.Label();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.trbVolume = new System.Windows.Forms.TrackBar();
+            this.btnUpload = new System.Windows.Forms.Button();
             this.btnReplay = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnBackward = new System.Windows.Forms.Button();
             this.btnForward = new System.Windows.Forms.Button();
             this.btnPlayPause = new System.Windows.Forms.Button();
             this.picCanvas = new System.Windows.Forms.PictureBox();
-            this.btnUpload = new System.Windows.Forms.Button();
-            this.txtFileName = new System.Windows.Forms.TextBox();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.lblTimer = new System.Windows.Forms.Label();
-            this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.btnVolume = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.trbVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.SuspendLayout();
             // 
@@ -55,6 +58,44 @@
             this.pgProgress.Step = 1;
             this.pgProgress.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.pgProgress.TabIndex = 1;
+            // 
+            // txtFileName
+            // 
+            this.txtFileName.Enabled = false;
+            this.txtFileName.Location = new System.Drawing.Point(87, 795);
+            this.txtFileName.Margin = new System.Windows.Forms.Padding(4);
+            this.txtFileName.Name = "txtFileName";
+            this.txtFileName.Size = new System.Drawing.Size(132, 22);
+            this.txtFileName.TabIndex = 8;
+            // 
+            // lblTimer
+            // 
+            this.lblTimer.AutoSize = true;
+            this.lblTimer.Location = new System.Drawing.Point(1419, 727);
+            this.lblTimer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblTimer.Name = "lblTimer";
+            this.lblTimer.Size = new System.Drawing.Size(38, 16);
+            this.lblTimer.TabIndex = 9;
+            this.lblTimer.Text = "00:00";
+            // 
+            // trbVolume
+            // 
+            this.trbVolume.Location = new System.Drawing.Point(1158, 770);
+            this.trbVolume.Name = "trbVolume";
+            this.trbVolume.Size = new System.Drawing.Size(171, 56);
+            this.trbVolume.TabIndex = 10;
+            this.trbVolume.Scroll += new System.EventHandler(this.trbVolume_Scroll);
+            // 
+            // btnUpload
+            // 
+            this.btnUpload.Image = ((System.Drawing.Image)(resources.GetObject("btnUpload.Image")));
+            this.btnUpload.Location = new System.Drawing.Point(16, 762);
+            this.btnUpload.Margin = new System.Windows.Forms.Padding(4);
+            this.btnUpload.Name = "btnUpload";
+            this.btnUpload.Size = new System.Drawing.Size(63, 70);
+            this.btnUpload.TabIndex = 7;
+            this.btnUpload.UseVisualStyleBackColor = true;
+            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
             // 
             // btnReplay
             // 
@@ -120,41 +161,23 @@
             this.picCanvas.TabIndex = 0;
             this.picCanvas.TabStop = false;
             // 
-            // btnUpload
+            // btnVolume
             // 
-            this.btnUpload.Image = ((System.Drawing.Image)(resources.GetObject("btnUpload.Image")));
-            this.btnUpload.Location = new System.Drawing.Point(16, 762);
-            this.btnUpload.Margin = new System.Windows.Forms.Padding(4);
-            this.btnUpload.Name = "btnUpload";
-            this.btnUpload.Size = new System.Drawing.Size(63, 70);
-            this.btnUpload.TabIndex = 7;
-            this.btnUpload.UseVisualStyleBackColor = true;
-            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
-            // 
-            // txtFileName
-            // 
-            this.txtFileName.Enabled = false;
-            this.txtFileName.Location = new System.Drawing.Point(87, 795);
-            this.txtFileName.Margin = new System.Windows.Forms.Padding(4);
-            this.txtFileName.Name = "txtFileName";
-            this.txtFileName.Size = new System.Drawing.Size(132, 22);
-            this.txtFileName.TabIndex = 8;
-            // 
-            // lblTimer
-            // 
-            this.lblTimer.AutoSize = true;
-            this.lblTimer.Location = new System.Drawing.Point(1419, 727);
-            this.lblTimer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(38, 16);
-            this.lblTimer.TabIndex = 9;
-            this.lblTimer.Text = "00:00";
+            this.btnVolume.Image = global::ReproductorMúsica.Properties.Resources.volumen;
+            this.btnVolume.Location = new System.Drawing.Point(1094, 770);
+            this.btnVolume.Name = "btnVolume";
+            this.btnVolume.Size = new System.Drawing.Size(58, 47);
+            this.btnVolume.TabIndex = 11;
+            this.btnVolume.UseVisualStyleBackColor = true;
+            this.btnVolume.Click += new System.EventHandler(this.btnVolume_Click);
             // 
             // frmMusicPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1540, 846);
+            this.Controls.Add(this.btnVolume);
+            this.Controls.Add(this.trbVolume);
             this.Controls.Add(this.lblTimer);
             this.Controls.Add(this.txtFileName);
             this.Controls.Add(this.btnUpload);
@@ -172,6 +195,7 @@
             this.Text = "Windows Media Player";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.frmMusicPlayer_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.trbVolume)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -192,5 +216,7 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label lblTimer;
         private System.Windows.Forms.Timer timer2;
+        private System.Windows.Forms.TrackBar trbVolume;
+        private System.Windows.Forms.Button btnVolume;
     }
 }

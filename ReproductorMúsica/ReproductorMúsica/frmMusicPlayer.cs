@@ -39,6 +39,19 @@ namespace ReproductorMúsica
                 try { pb.Minimum = 0; pb.Value = 0; pb.Maximum = ProgressScale; pb.Enabled = true; } catch { }
             }
 
+            // Initialize volume control defaults (designer declares trbVolume)
+            try
+            {
+                if (this.trbVolume != null)
+                {
+                    this.trbVolume.Minimum = 0;
+                    this.trbVolume.Maximum = 100;
+                    if (this.trbVolume.Value < this.trbVolume.Minimum || this.trbVolume.Value > this.trbVolume.Maximum)
+                        this.trbVolume.Value = 50;
+                }
+            }
+            catch { }
+
             this.btnForward.Click += btnForward_Click;
             this.btnBackward.Click += btnBackward_Click;
             this.btnStop.Click += btnStop_Click;
@@ -102,6 +115,17 @@ namespace ReproductorMúsica
 
                         // Reset looping to current setting
                         try { player.settings.setMode("loop", isLooping); } catch { }
+
+                        // Apply volume from UI if available
+                        try
+                        {
+                            if (this.trbVolume != null)
+                            {
+                                int vol = Math.Max(0, Math.Min(100, this.trbVolume.Value));
+                                try { player.settings.volume = vol; } catch { }
+                            }
+                        }
+                        catch { }
 
                         // Set URL and play
                         player.URL = file;
@@ -535,6 +559,50 @@ namespace ReproductorMúsica
             catch (Exception ex)
             {
                 MessageBox.Show("Error al alternar replay: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void trbVolume_Scroll(object sender, EventArgs e)
+        {
+            try
+            {
+                if (player == null)
+                    return;
+
+                // Set the player volume based on the track bar value
+                try
+                {
+                    int vol = Math.Max(0, Math.Min(100, this.trbVolume.Value));
+                    player.settings.volume = vol;
+                }
+                catch { }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al ajustar el volumen: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnVolume_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Set volume to 0 (mute)
+                try
+                {
+                    if (player != null)
+                    {
+                        player.settings.volume = 0;
+                    }
+                }
+                catch { }
+
+                // Update trackbar UI if present
+                try { if (this.trbVolume != null) this.trbVolume.Value = 0; } catch { }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al silenciar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
