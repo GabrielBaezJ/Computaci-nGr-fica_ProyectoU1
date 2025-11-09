@@ -20,6 +20,13 @@ namespace ReproductorMúsica
         private bool isPlaying = false;
         private bool isLooping = false;
 
+        // new field to store selected visualization style
+        private int visualStyle = 0; // 0=barras,1=circulos,2=poligonos
+        private ToolTip canvasToolTip;
+
+        // new field: audio analyzer for real FFT spectrum
+        private AudioAnalyzer analyzer = null;
+
         // Use a fixed scale for the progress bar so we update by percentage (smoother and independent of duration)
         private const int ProgressScale = 1000;
 
@@ -64,6 +71,64 @@ namespace ReproductorMúsica
 
             // Ensure animation timer has a reasonable default
             try { this.timer2.Interval = 40; } catch { }
+
+            // Setup tooltip for canvas and hook mouse click to change visualization
+            try
+            {
+                canvasToolTip = new ToolTip();
+                canvasToolTip.IsBalloon = false;
+                canvasToolTip.ShowAlways = true;
+
+                if (this.picCanvas != null)
+                {
+                    this.picCanvas.MouseClick += PicCanvas_MouseClick;
+                }
+            }
+            catch { }
+        }
+
+        private void PicCanvas_MouseClick(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    // cycle visualization style
+                    visualStyle = (visualStyle + 1) % 3;
+
+                    // apply to helper if present
+                    if (mediaHelper != null)
+                    {
+                        mediaHelper.SetStyle(visualStyle);
+                    }
+
+                    // show quick tip
+                    string name = GetStyleName(visualStyle);
+                    var p = picCanvas.PointToScreen(new Point(e.X, e.Y));
+                    canvasToolTip.Show("Visual: " + name, this.picCanvas, e.X + 10, e.Y + 10, 1000);
+                }
+                else if (e.Button == MouseButtons.Left)
+                {
+                    // optional: left click can toggle pause/play
+                    try
+                    {
+                        btnPlayPause.PerformClick();
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+        }
+
+        private string GetStyleName(int s)
+        {
+            switch (s)
+            {
+                case 0: return "Barras";
+                case 1: return "Círculos";
+                case 2: return "Polígonos";
+                default: return "Desconocido";
+            }
         }
 
         private ProgressBar GetProgressBar()
@@ -98,7 +163,19 @@ namespace ReproductorMúsica
                 // create helper using player, animation timer and canvas
                 try
                 {
-                    mediaHelper = new CMediaPlayer(player, this.timer2, this.picCanvas);
+                    // create analyzer if available
+                    try
+                    {
+                        if (analyzer == null)
+                        {
+                            analyzer = new AudioAnalyzer(2048); // FFT size 2048
+                        }
+                    }
+                    catch { analyzer = null; }
+
+                    mediaHelper = new CMediaPlayer(player, this.timer2, this.picCanvas, analyzer);
+                    // apply current visual style
+                    mediaHelper.SetStyle(visualStyle);
                 }
                 catch { }
             }
@@ -146,7 +223,8 @@ namespace ReproductorMúsica
                         // Load track into helper and play
                         if (mediaHelper != null)
                         {
-                            mediaHelper.LoadTrack(file, 0);
+                            // use selected visual style when loading
+                            mediaHelper.LoadTrack(file, -1);
                             mediaHelper.Play();
                             isPlaying = true;
                         }
@@ -582,6 +660,9 @@ namespace ReproductorMúsica
                         }
                     }
                     catch { }
+
+                    // dispose analyzer
+                    try { if (analyzer != null) { analyzer.Stop(); analyzer.Dispose(); analyzer = null; } } catch { }
                 }
                 catch { }
             }
