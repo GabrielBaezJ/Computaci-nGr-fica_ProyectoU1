@@ -8,22 +8,53 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using WMPLib; 
 
 namespace ReproductorMúsica
 {
     public partial class frmMusicPlayer : Form
     {
-        // Windows Media Player COM object (kept as dynamic to avoid early binding)
-        private dynamic player = null;
+        // Use strongly-typed Windows Media Player COM object
+        private WindowsMediaPlayer player = null;
         private bool isPlaying = false;
+        private bool isLooping = false;
+
+        // Use a fixed scale for the progress bar so we update by percentage (smoother and independent of duration)
+        private const int ProgressScale = 1000;
 
         public frmMusicPlayer()
         {
             InitializeComponent();
 
-            // Wire events
-            this.btnUpload.Click += btnUpload_Click;
-            this.btnPlayPause.Click += btnPlayPause_Click;
+            // NOTE: click events are wired in the Designer; avoid wiring them here to prevent double-invocation
+            // NOTE: click events for upload/playpause are wired in the Designer.
+            // Wire additional UI events here.
+            var pb = GetProgressBar();
+            if (pb != null)
+            {
+                // allow seeking by clicking
+                pb.MouseDown += progressBar_MouseDown;
+                // smoother visual updates
+                try { pb.Style = ProgressBarStyle.Continuous; } catch { }
+                try { pb.Minimum = 0; pb.Value = 0; pb.Maximum = ProgressScale; pb.Enabled = true; } catch { }
+            }
+
+            this.btnForward.Click += btnForward_Click;
+            this.btnBackward.Click += btnBackward_Click;
+            this.btnStop.Click += btnStop_Click;
+            this.btnReplay.Click += btnReplay_Click;
+
+            // Configure timer to update progress
+            this.timer1.Interval = 250; // faster updates
+            this.timer1.Tick += timer1_Tick;
+        }
+
+        private ProgressBar GetProgressBar()
+        {
+            var found = this.Controls.Find("progressBar1", true);
+            if (found != null && found.Length > 0)
+                return found[0] as ProgressBar;
+            return null;
         }
 
         private void frmMusicPlayer_Load(object sender, EventArgs e)
@@ -48,24 +79,43 @@ namespace ReproductorMúsica
                         // Show filename in textbox
                         this.txtFileName.Text = Path.GetFileName(file);
 
-                        // Create Windows Media Player COM instance if needed
+                        // initialize label and progress immediately
+                        try { lblTimer.Text = "00:00 / 00:00"; } catch { }
+                        var pbInit = GetProgressBar();
+                        if (pbInit != null) { try { pbInit.Minimum = 0; pbInit.Value = 0; pbInit.Maximum = ProgressScale; pbInit.Enabled = true; } catch { } }
+
+                        // Create Windows Media Player instance if needed
                         if (player == null)
                         {
-                            Type wmpType = Type.GetTypeFromProgID("WMPlayer.OCX");
-                            if (wmpType == null)
+                            try
+                            {
+                                player = new WindowsMediaPlayer();
+                                // subscribe to play state changes so we can start/stop the timer
+                                player.PlayStateChange += Player_PlayStateChange;
+                            }
+                            catch (Exception)
                             {
                                 MessageBox.Show("Windows Media Player no está disponible en este equipo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 return;
                             }
-
-                            player = Activator.CreateInstance(wmpType);
                         }
+
+                        // Reset looping to current setting
+                        try { player.settings.setMode("loop", isLooping); } catch { }
 
                         // Set URL and play
                         player.URL = file;
                         player.controls.play();
                         isPlaying = true;
 
+                        // Start timer (play state event will also manage it)
+                        try { this.Invoke((Action)(() => this.timer1.Start())); } catch { try { this.timer1.Start(); } catch { } }
+
+                        // Try to initialize progress bar (duration may not be available yet)
+                        TryInitializeProgressBar();
+
+                        // Poll for duration in background and initialize UI as soon as it's available
+                        WaitForMediaReady();
                     }
                     catch (Exception ex)
                     {
@@ -80,22 +130,411 @@ namespace ReproductorMúsica
             try
             {
                 if (player == null)
-                    return;
+                    return; // no file loaded
 
                 if (isPlaying)
                 {
                     player.controls.pause();
                     isPlaying = false;
+                    try { this.Invoke((Action)(() => this.timer1.Stop())); } catch { try { this.timer1.Stop(); } catch { } }
                 }
                 else
                 {
                     player.controls.play();
                     isPlaying = true;
+                    try { this.Invoke((Action)(() => this.timer1.Start())); } catch { try { this.timer1.Start(); } catch { } }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error al reproducir/pausar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Timer tick: update progress bar and time label
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                UpdateProgressUI();
+            }
+            catch
+            {
+                // swallow exceptions to avoid timer crash
+            }
+        }
+
+        private double GetMediaDuration()
+        {
+            try
+            {
+                if (player == null) return double.NaN;
+
+                // Try currentMedia
+                try
+                {
+                    var m = player.currentMedia;
+                    if (m != null)
+                    {
+                        double d = m.duration;
+                        if (!double.IsNaN(d) && d > 0) return d;
+                    }
+                }
+                catch { }
+
+                // Try controls.currentItem
+                try
+                {
+                    var ci = player.controls.currentItem;
+                    if (ci != null)
+                    {
+                        double d2 = ci.duration;
+                        if (!double.IsNaN(d2) && d2 > 0) return d2;
+                    }
+                }
+                catch { }
+
+                // As fallback, try to read the duration from currentMedia again
+                try
+                {
+                    var m2 = player.currentMedia;
+                    if (m2 != null) return m2.duration;
+                }
+                catch { }
+
+                return double.NaN;
+            }
+            catch { return double.NaN; }
+        }
+
+        private double GetCurrentPosition()
+        {
+            try
+            {
+                if (player == null) return 0;
+                try { return player.controls.currentPosition; } catch { return 0; }
+            }
+            catch { return 0; }
+        }
+
+        private void UpdateProgressUI()
+        {
+            if (player == null)
+                return;
+
+            double duration = GetMediaDuration();
+            double position = GetCurrentPosition();
+
+            var pb = GetProgressBar();
+
+            // If duration not yet valid, set basic UI and exit
+            if (double.IsNaN(duration) || duration <= 0)
+            {
+                if (pb != null)
+                {
+                    try { pb.Value = 0; } catch { }
+                    try { pb.Maximum = ProgressScale; } catch { }
+                }
+                try { lblTimer.Text = "00:00 / 00:00"; } catch { }
+                return;
+            }
+
+            if (pb != null)
+            {
+                // Use percentage of duration on a fixed scale for smoother and consistent updates
+                int val = 0;
+                try
+                {
+                    double ratio = position / duration;
+                    ratio = Math.Max(0.0, Math.Min(1.0, ratio));
+                    val = (int)Math.Round(ratio * ProgressScale);
+                    if (val < 0) val = 0;
+                    if (val > ProgressScale) val = ProgressScale;
+                    // ensure enabled so value shows
+                    try { if (!pb.Enabled) pb.Enabled = true; } catch { }
+                    pb.Value = val;
+                    pb.Refresh();
+                    pb.Invalidate();
+                    pb.Update();
+                }
+                catch { }
+            }
+
+            try { lblTimer.Text = FormatTime(position) + " / " + FormatTime(duration); } catch { }
+        }
+
+        private string FormatTime(double seconds)
+        {
+            if (double.IsNaN(seconds) || seconds <= 0)
+                return "00:00";
+
+            int s = (int)Math.Floor(seconds);
+            int minutes = s / 60;
+            int secs = s % 60;
+            return string.Format("{0:D2}:{1:D2}", minutes, secs);
+        }
+
+        // Poll until the media object reports a valid duration, then initialize UI
+        private async void WaitForMediaReady()
+        {
+            if (player == null)
+                return;
+
+            for (int i = 0; i < 50; i++) // try for ~10 seconds
+            {
+                try
+                {
+                    double d = GetMediaDuration();
+                    if (!double.IsNaN(d) && d > 0)
+                    {
+                        // initialize on UI thread
+                        try { this.Invoke((Action)TryInitializeProgressBar); } catch { TryInitializeProgressBar(); }
+                        try { this.Invoke((Action)UpdateProgressUI); } catch { UpdateProgressUI(); }
+                        return;
+                    }
+                }
+                catch
+                {
+                    // ignore COM errors while media is loading
+                }
+
+                await Task.Delay(200);
+            }
+
+            // fallback: if not available, set basic label
+            try { lblTimer.Text = "00:00 / 00:00"; } catch { }
+        }
+
+        // Seek when user clicks on progress bar
+        private void progressBar_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                if (player == null)
+                    return;
+
+                double duration = GetMediaDuration();
+                if (double.IsNaN(duration) || duration <= 0)
+                    return;
+
+                var pb = sender as ProgressBar ?? GetProgressBar();
+                if (pb == null)
+                    return;
+
+                double ratio = e.X / (double)Math.Max(1, pb.Width);
+                ratio = Math.Max(0.0, Math.Min(1.0, ratio));
+                double newPos = ratio * duration;
+
+                player.controls.currentPosition = newPos;
+
+                // Update UI immediately using the same scaled value
+                try
+                {
+                    int val = (int)Math.Round(ratio * ProgressScale);
+                    if (val < 0) val = 0;
+                    if (val > ProgressScale) val = ProgressScale;
+                    pb.Value = val;
+                    pb.Refresh();
+                }
+                catch { }
+
+                lblTimer.Text = FormatTime(newPos) + " / " + FormatTime(duration);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al mover la barra de progreso: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void TryInitializeProgressBar()
+        {
+            try
+            {
+                double duration = GetMediaDuration();
+                if (double.IsNaN(duration) || duration <= 0)
+                    return;
+
+                var pb = GetProgressBar();
+                if (pb == null)
+                    return;
+
+                try { pb.Minimum = 0; } catch { }
+                try { pb.Maximum = ProgressScale; } catch { }
+                try { pb.Value = 0; } catch { }
+                try { pb.Enabled = true; } catch { }
+                try { lblTimer.Text = "00:00 / " + FormatTime(duration); } catch { }
+            }
+            catch
+            {
+            }
+        }
+
+        private void Player_PlayStateChange(int NewState)
+        {
+            try
+            {
+                var state = (WMPPlayState)NewState;
+                var pb = GetProgressBar();
+                if (state == WMPPlayState.wmppsPlaying)
+                {
+                    // When playback actually starts, duration should be available; try initializing
+                    try { this.Invoke((Action)TryInitializeProgressBar); } catch { TryInitializeProgressBar(); }
+                    try { this.Invoke((Action)(() => this.timer1.Start())); } catch { try { this.timer1.Start(); } catch { } }
+                    try { this.Invoke((Action)UpdateProgressUI); } catch { UpdateProgressUI(); }
+                    isPlaying = true;
+                }
+                else if (state == WMPPlayState.wmppsPaused)
+                {
+                    try { this.Invoke((Action)(() => this.timer1.Stop())); } catch { try { this.timer1.Stop(); } catch { } }
+                    isPlaying = false;
+                }
+                else if (state == WMPPlayState.wmppsStopped || state == WMPPlayState.wmppsMediaEnded)
+                {
+                    try { this.Invoke((Action)(() => this.timer1.Stop())); } catch { try { this.timer1.Stop(); } catch { } }
+                    isPlaying = false;
+
+                    // when media ends, reset progress to end (or 0 depending on desired behavior)
+                    try
+                    {
+                        if (player != null && !double.IsNaN(GetMediaDuration()) && pb != null)
+                        {
+                            double duration = GetMediaDuration();
+                            if (duration > 0)
+                            {
+                                try { pb.Value = ProgressScale; } catch { }
+                                try { lblTimer.Text = FormatTime(duration) + " / " + FormatTime(duration); } catch { }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+        }
+
+        private void pgProgress_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnForward_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (player == null || double.IsNaN(GetMediaDuration()))
+                    return;
+
+                double duration = GetMediaDuration();
+                double pos = GetCurrentPosition();
+                double newPos = Math.Min(duration, pos + 10.0); // jump forward 10 seconds
+                player.controls.currentPosition = newPos;
+                try { UpdateProgressUI(); } catch { }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al avanzar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnBackward_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (player == null)
+                    return;
+
+                double pos = GetCurrentPosition();
+                double newPos = Math.Max(0.0, pos - 10.0); // jump back 10 seconds
+                player.controls.currentPosition = newPos;
+                try { UpdateProgressUI(); } catch { }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al retroceder: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Stop playback and clear loaded file so user can upload another
+                if (player != null)
+                {
+                    try { player.controls.stop(); } catch { }
+                    try { player.close(); } catch { }
+                }
+
+                isPlaying = false;
+
+                try { this.Invoke((Action)(() => this.timer1.Stop())); } catch { try { this.timer1.Stop(); } catch { } }
+
+                // Clear UI and state
+                try
+                {
+                    // clear loaded file info
+                    this.txtFileName.Text = string.Empty;
+
+                    // reset progress bar
+                    var pb = GetProgressBar();
+                    if (pb != null)
+                    {
+                        try { pb.Value = 0; } catch { }
+                        try { pb.Enabled = false; } catch { }
+                    }
+
+                    // reset timer label
+                    try { lblTimer.Text = "00:00"; } catch { }
+
+                    // release player instance so a new file can be loaded cleanly
+                    try
+                    {
+                        if (player != null)
+                        {
+                            try { player.PlayStateChange -= Player_PlayStateChange; } catch { }
+                            try { player = null; } catch { }
+                        }
+                    }
+                    catch { }
+                }
+                catch { }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al detener y limpiar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnReplay_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Toggle looping mode
+                isLooping = !isLooping;
+                if (player != null)
+                {
+                    try { player.settings.setMode("loop", isLooping); } catch { }
+                }
+
+                // Provide immediate feedback: if enabled and media loaded, restart playback from beginning
+                if (isLooping)
+                {
+                    // ensure the mode is set; if media loaded restart
+                    if (player != null && !double.IsNaN(GetMediaDuration()))
+                    {
+                        try { player.controls.currentPosition = 0; } catch { }
+                        try { player.controls.play(); isPlaying = true; } catch { }
+                        try { this.Invoke((Action)(() => this.timer1.Start())); } catch { try { this.timer1.Start(); } catch { } }
+                    }
+                }
+                else
+                {
+                    // looping disabled; no further action required
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al alternar replay: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

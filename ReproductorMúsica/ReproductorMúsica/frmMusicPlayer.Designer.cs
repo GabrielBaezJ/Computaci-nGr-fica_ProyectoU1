@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMusicPlayer));
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.pgProgress = new System.Windows.Forms.ProgressBar();
             this.btnReplay = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnBackward = new System.Windows.Forms.Button();
@@ -45,73 +45,88 @@
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.SuspendLayout();
             // 
-            // progressBar1
+            // pgProgress
             // 
-            this.progressBar1.Location = new System.Drawing.Point(9, 587);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(1037, 17);
-            this.progressBar1.TabIndex = 1;
+            this.pgProgress.Location = new System.Drawing.Point(12, 722);
+            this.pgProgress.Margin = new System.Windows.Forms.Padding(4);
+            this.pgProgress.Name = "pgProgress";
+            this.pgProgress.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.pgProgress.Size = new System.Drawing.Size(1383, 21);
+            this.pgProgress.Step = 1;
+            this.pgProgress.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pgProgress.TabIndex = 1;
             // 
             // btnReplay
             // 
             this.btnReplay.Image = global::ReproductorMúsica.Properties.Resources.replay;
-            this.btnReplay.Location = new System.Drawing.Point(679, 628);
+            this.btnReplay.Location = new System.Drawing.Point(905, 773);
+            this.btnReplay.Margin = new System.Windows.Forms.Padding(4);
             this.btnReplay.Name = "btnReplay";
-            this.btnReplay.Size = new System.Drawing.Size(45, 38);
+            this.btnReplay.Size = new System.Drawing.Size(60, 47);
             this.btnReplay.TabIndex = 6;
             this.btnReplay.UseVisualStyleBackColor = true;
+            this.btnReplay.Click += new System.EventHandler(this.btnReplay_Click);
             // 
             // btnStop
             // 
             this.btnStop.Image = global::ReproductorMúsica.Properties.Resources.stop;
-            this.btnStop.Location = new System.Drawing.Point(412, 628);
+            this.btnStop.Location = new System.Drawing.Point(549, 773);
+            this.btnStop.Margin = new System.Windows.Forms.Padding(4);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(43, 38);
+            this.btnStop.Size = new System.Drawing.Size(57, 47);
             this.btnStop.TabIndex = 5;
             this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // btnBackward
             // 
             this.btnBackward.Image = global::ReproductorMúsica.Properties.Resources.backward;
-            this.btnBackward.Location = new System.Drawing.Point(461, 628);
+            this.btnBackward.Location = new System.Drawing.Point(615, 773);
+            this.btnBackward.Margin = new System.Windows.Forms.Padding(4);
             this.btnBackward.Name = "btnBackward";
-            this.btnBackward.Size = new System.Drawing.Size(63, 38);
+            this.btnBackward.Size = new System.Drawing.Size(84, 47);
             this.btnBackward.TabIndex = 4;
             this.btnBackward.UseVisualStyleBackColor = true;
+            this.btnBackward.Click += new System.EventHandler(this.btnBackward_Click);
             // 
             // btnForward
             // 
             this.btnForward.Image = global::ReproductorMúsica.Properties.Resources.forward;
-            this.btnForward.Location = new System.Drawing.Point(610, 628);
+            this.btnForward.Location = new System.Drawing.Point(813, 773);
+            this.btnForward.Margin = new System.Windows.Forms.Padding(4);
             this.btnForward.Name = "btnForward";
-            this.btnForward.Size = new System.Drawing.Size(63, 38);
+            this.btnForward.Size = new System.Drawing.Size(84, 47);
             this.btnForward.TabIndex = 3;
             this.btnForward.UseVisualStyleBackColor = true;
+            this.btnForward.Click += new System.EventHandler(this.btnForward_Click);
             // 
             // btnPlayPause
             // 
             this.btnPlayPause.Image = global::ReproductorMúsica.Properties.Resources.pause_play;
-            this.btnPlayPause.Location = new System.Drawing.Point(530, 610);
+            this.btnPlayPause.Location = new System.Drawing.Point(707, 751);
+            this.btnPlayPause.Margin = new System.Windows.Forms.Padding(4);
             this.btnPlayPause.Name = "btnPlayPause";
-            this.btnPlayPause.Size = new System.Drawing.Size(74, 75);
+            this.btnPlayPause.Size = new System.Drawing.Size(99, 92);
             this.btnPlayPause.TabIndex = 2;
             this.btnPlayPause.UseVisualStyleBackColor = true;
             this.btnPlayPause.Click += new System.EventHandler(this.btnPlayPause_Click);
             // 
             // picCanvas
             // 
-            this.picCanvas.Location = new System.Drawing.Point(9, 10);
+            this.picCanvas.Location = new System.Drawing.Point(12, 12);
+            this.picCanvas.Margin = new System.Windows.Forms.Padding(4);
             this.picCanvas.Name = "picCanvas";
-            this.picCanvas.Size = new System.Drawing.Size(1350, 571);
+            this.picCanvas.Size = new System.Drawing.Size(1800, 703);
             this.picCanvas.TabIndex = 0;
             this.picCanvas.TabStop = false;
             // 
             // btnUpload
             // 
             this.btnUpload.Image = ((System.Drawing.Image)(resources.GetObject("btnUpload.Image")));
-            this.btnUpload.Location = new System.Drawing.Point(12, 619);
+            this.btnUpload.Location = new System.Drawing.Point(16, 762);
+            this.btnUpload.Margin = new System.Windows.Forms.Padding(4);
             this.btnUpload.Name = "btnUpload";
-            this.btnUpload.Size = new System.Drawing.Size(47, 57);
+            this.btnUpload.Size = new System.Drawing.Size(63, 70);
             this.btnUpload.TabIndex = 7;
             this.btnUpload.UseVisualStyleBackColor = true;
             this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
@@ -119,25 +134,27 @@
             // txtFileName
             // 
             this.txtFileName.Enabled = false;
-            this.txtFileName.Location = new System.Drawing.Point(65, 646);
+            this.txtFileName.Location = new System.Drawing.Point(87, 795);
+            this.txtFileName.Margin = new System.Windows.Forms.Padding(4);
             this.txtFileName.Name = "txtFileName";
-            this.txtFileName.Size = new System.Drawing.Size(100, 20);
+            this.txtFileName.Size = new System.Drawing.Size(132, 22);
             this.txtFileName.TabIndex = 8;
             // 
             // lblTimer
             // 
             this.lblTimer.AutoSize = true;
-            this.lblTimer.Location = new System.Drawing.Point(1064, 591);
+            this.lblTimer.Location = new System.Drawing.Point(1419, 727);
+            this.lblTimer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(34, 13);
+            this.lblTimer.Size = new System.Drawing.Size(38, 16);
             this.lblTimer.TabIndex = 9;
             this.lblTimer.Text = "00:00";
             // 
             // frmMusicPlayer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1155, 687);
+            this.ClientSize = new System.Drawing.Size(1540, 846);
             this.Controls.Add(this.lblTimer);
             this.Controls.Add(this.txtFileName);
             this.Controls.Add(this.btnUpload);
@@ -146,9 +163,10 @@
             this.Controls.Add(this.btnBackward);
             this.Controls.Add(this.btnForward);
             this.Controls.Add(this.btnPlayPause);
-            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.pgProgress);
             this.Controls.Add(this.picCanvas);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmMusicPlayer";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Windows Media Player";
@@ -163,7 +181,7 @@
         #endregion
 
         private System.Windows.Forms.PictureBox picCanvas;
-        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ProgressBar pgProgress;
         private System.Windows.Forms.Button btnPlayPause;
         private System.Windows.Forms.Button btnForward;
         private System.Windows.Forms.Button btnBackward;
