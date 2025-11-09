@@ -50,11 +50,11 @@
             // 
             // pgProgress
             // 
-            this.pgProgress.Location = new System.Drawing.Point(12, 722);
+            this.pgProgress.Location = new System.Drawing.Point(24, 727);
             this.pgProgress.Margin = new System.Windows.Forms.Padding(4);
             this.pgProgress.Name = "pgProgress";
             this.pgProgress.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.pgProgress.Size = new System.Drawing.Size(1383, 21);
+            this.pgProgress.Size = new System.Drawing.Size(1376, 21);
             this.pgProgress.Step = 1;
             this.pgProgress.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.pgProgress.TabIndex = 1;
@@ -62,25 +62,28 @@
             // txtFileName
             // 
             this.txtFileName.Enabled = false;
-            this.txtFileName.Location = new System.Drawing.Point(87, 795);
+            this.txtFileName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtFileName.Location = new System.Drawing.Point(24, 774);
             this.txtFileName.Margin = new System.Windows.Forms.Padding(4);
             this.txtFileName.Name = "txtFileName";
-            this.txtFileName.Size = new System.Drawing.Size(132, 22);
+            this.txtFileName.Size = new System.Drawing.Size(497, 24);
             this.txtFileName.TabIndex = 8;
+            this.txtFileName.TextChanged += new System.EventHandler(this.txtFileName_TextChanged);
             // 
             // lblTimer
             // 
             this.lblTimer.AutoSize = true;
-            this.lblTimer.Location = new System.Drawing.Point(1419, 727);
+            this.lblTimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTimer.Location = new System.Drawing.Point(1423, 727);
             this.lblTimer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(38, 16);
+            this.lblTimer.Size = new System.Drawing.Size(44, 18);
             this.lblTimer.TabIndex = 9;
             this.lblTimer.Text = "00:00";
             // 
             // trbVolume
             // 
-            this.trbVolume.Location = new System.Drawing.Point(1158, 770);
+            this.trbVolume.Location = new System.Drawing.Point(1192, 764);
             this.trbVolume.Name = "trbVolume";
             this.trbVolume.Size = new System.Drawing.Size(171, 56);
             this.trbVolume.TabIndex = 10;
@@ -89,10 +92,10 @@
             // btnUpload
             // 
             this.btnUpload.Image = ((System.Drawing.Image)(resources.GetObject("btnUpload.Image")));
-            this.btnUpload.Location = new System.Drawing.Point(16, 762);
+            this.btnUpload.Location = new System.Drawing.Point(1426, 770);
             this.btnUpload.Margin = new System.Windows.Forms.Padding(4);
             this.btnUpload.Name = "btnUpload";
-            this.btnUpload.Size = new System.Drawing.Size(63, 70);
+            this.btnUpload.Size = new System.Drawing.Size(76, 61);
             this.btnUpload.TabIndex = 7;
             this.btnUpload.UseVisualStyleBackColor = true;
             this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
@@ -100,7 +103,7 @@
             // btnReplay
             // 
             this.btnReplay.Image = global::ReproductorMúsica.Properties.Resources.replay;
-            this.btnReplay.Location = new System.Drawing.Point(905, 773);
+            this.btnReplay.Location = new System.Drawing.Point(940, 774);
             this.btnReplay.Margin = new System.Windows.Forms.Padding(4);
             this.btnReplay.Name = "btnReplay";
             this.btnReplay.Size = new System.Drawing.Size(60, 47);
@@ -133,7 +136,7 @@
             // btnForward
             // 
             this.btnForward.Image = global::ReproductorMúsica.Properties.Resources.forward;
-            this.btnForward.Location = new System.Drawing.Point(813, 773);
+            this.btnForward.Location = new System.Drawing.Point(839, 773);
             this.btnForward.Margin = new System.Windows.Forms.Padding(4);
             this.btnForward.Name = "btnForward";
             this.btnForward.Size = new System.Drawing.Size(84, 47);
@@ -144,7 +147,7 @@
             // btnPlayPause
             // 
             this.btnPlayPause.Image = global::ReproductorMúsica.Properties.Resources.pause_play;
-            this.btnPlayPause.Location = new System.Drawing.Point(707, 751);
+            this.btnPlayPause.Location = new System.Drawing.Point(720, 751);
             this.btnPlayPause.Margin = new System.Windows.Forms.Padding(4);
             this.btnPlayPause.Name = "btnPlayPause";
             this.btnPlayPause.Size = new System.Drawing.Size(99, 92);
@@ -164,7 +167,7 @@
             // btnVolume
             // 
             this.btnVolume.Image = global::ReproductorMúsica.Properties.Resources.volumen;
-            this.btnVolume.Location = new System.Drawing.Point(1094, 770);
+            this.btnVolume.Location = new System.Drawing.Point(1116, 770);
             this.btnVolume.Name = "btnVolume";
             this.btnVolume.Size = new System.Drawing.Size(58, 47);
             this.btnVolume.TabIndex = 11;

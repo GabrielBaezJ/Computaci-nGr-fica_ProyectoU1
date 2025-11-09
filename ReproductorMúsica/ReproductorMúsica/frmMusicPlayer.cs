@@ -16,6 +16,7 @@ namespace ReproductorMúsica
     {
         // Use strongly-typed Windows Media Player COM object
         private WindowsMediaPlayer player = null;
+        private CMediaPlayer mediaHelper = null;
         private bool isPlaying = false;
         private bool isLooping = false;
 
@@ -60,19 +61,47 @@ namespace ReproductorMúsica
             // Configure timer to update progress
             this.timer1.Interval = 250; // faster updates
             this.timer1.Tick += timer1_Tick;
+
+            // Ensure animation timer has a reasonable default
+            try { this.timer2.Interval = 40; } catch { }
         }
 
         private ProgressBar GetProgressBar()
         {
-            var found = this.Controls.Find("progressBar1", true);
-            if (found != null && found.Length > 0)
-                return found[0] as ProgressBar;
-            return null;
+            // use designer-named progress bar directly
+            return this.pgProgress;
         }
 
         private void frmMusicPlayer_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void EnsurePlayerAndHelper()
+        {
+            if (player == null)
+            {
+                try
+                {
+                    player = new WindowsMediaPlayer();
+                    player.PlayStateChange += Player_PlayStateChange;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Windows Media Player no está disponible en este equipo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            if (mediaHelper == null && player != null)
+            {
+                // create helper using player, animation timer and canvas
+                try
+                {
+                    mediaHelper = new CMediaPlayer(player, this.timer2, this.picCanvas);
+                }
+                catch { }
+            }
         }
 
         private void btnUpload_Click(object sender, EventArgs e)
@@ -97,40 +126,37 @@ namespace ReproductorMúsica
                         var pbInit = GetProgressBar();
                         if (pbInit != null) { try { pbInit.Minimum = 0; pbInit.Value = 0; pbInit.Maximum = ProgressScale; pbInit.Enabled = true; } catch { } }
 
-                        // Create Windows Media Player instance if needed
-                        if (player == null)
-                        {
-                            try
-                            {
-                                player = new WindowsMediaPlayer();
-                                // subscribe to play state changes so we can start/stop the timer
-                                player.PlayStateChange += Player_PlayStateChange;
-                            }
-                            catch (Exception)
-                            {
-                                MessageBox.Show("Windows Media Player no está disponible en este equipo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                return;
-                            }
-                        }
+                        // Create Windows Media Player instance and helper if needed
+                        EnsurePlayerAndHelper();
 
                         // Reset looping to current setting
-                        try { player.settings.setMode("loop", isLooping); } catch { }
+                        try { if (player != null) player.settings.setMode("loop", isLooping); } catch { }
 
                         // Apply volume from UI if available
                         try
                         {
-                            if (this.trbVolume != null)
+                            if (this.trbVolume != null && mediaHelper != null)
                             {
                                 int vol = Math.Max(0, Math.Min(100, this.trbVolume.Value));
-                                try { player.settings.volume = vol; } catch { }
+                                try { mediaHelper.SetVolume(vol); } catch { }
                             }
                         }
                         catch { }
 
-                        // Set URL and play
-                        player.URL = file;
-                        player.controls.play();
-                        isPlaying = true;
+                        // Load track into helper and play
+                        if (mediaHelper != null)
+                        {
+                            mediaHelper.LoadTrack(file, 0);
+                            mediaHelper.Play();
+                            isPlaying = true;
+                        }
+                        else if (player != null)
+                        {
+                            // fallback to direct player
+                            player.URL = file;
+                            player.controls.play();
+                            isPlaying = true;
+                        }
 
                         // Start timer (play state event will also manage it)
                         try { this.Invoke((Action)(() => this.timer1.Start())); } catch { try { this.timer1.Start(); } catch { } }
@@ -153,18 +179,26 @@ namespace ReproductorMúsica
         {
             try
             {
-                if (player == null)
+                if (player == null && mediaHelper == null)
                     return; // no file loaded
 
                 if (isPlaying)
                 {
-                    player.controls.pause();
+                    if (mediaHelper != null)
+                        mediaHelper.Pause();
+                    else
+                        player?.controls.pause();
+
                     isPlaying = false;
                     try { this.Invoke((Action)(() => this.timer1.Stop())); } catch { try { this.timer1.Stop(); } catch { } }
                 }
                 else
                 {
-                    player.controls.play();
+                    if (mediaHelper != null)
+                        mediaHelper.Play();
+                    else
+                        player?.controls.play();
+
                     isPlaying = true;
                     try { this.Invoke((Action)(() => this.timer1.Start())); } catch { try { this.timer1.Start(); } catch { } }
                 }
@@ -349,7 +383,10 @@ namespace ReproductorMúsica
                 ratio = Math.Max(0.0, Math.Min(1.0, ratio));
                 double newPos = ratio * duration;
 
-                player.controls.currentPosition = newPos;
+                if (mediaHelper != null)
+                    mediaHelper.Seek(newPos);
+                else
+                    player.controls.currentPosition = newPos;
 
                 // Update UI immediately using the same scaled value
                 try
@@ -448,10 +485,18 @@ namespace ReproductorMúsica
                 if (player == null || double.IsNaN(GetMediaDuration()))
                     return;
 
-                double duration = GetMediaDuration();
-                double pos = GetCurrentPosition();
-                double newPos = Math.Min(duration, pos + 10.0); // jump forward 10 seconds
-                player.controls.currentPosition = newPos;
+                if (mediaHelper != null)
+                {
+                    mediaHelper.Forward(10.0);
+                }
+                else
+                {
+                    double duration = GetMediaDuration();
+                    double pos = GetCurrentPosition();
+                    double newPos = Math.Min(duration, pos + 10.0); // jump forward 10 seconds
+                    player.controls.currentPosition = newPos;
+                }
+
                 try { UpdateProgressUI(); } catch { }
             }
             catch (Exception ex)
@@ -467,9 +512,17 @@ namespace ReproductorMúsica
                 if (player == null)
                     return;
 
-                double pos = GetCurrentPosition();
-                double newPos = Math.Max(0.0, pos - 10.0); // jump back 10 seconds
-                player.controls.currentPosition = newPos;
+                if (mediaHelper != null)
+                {
+                    mediaHelper.Backward(10.0);
+                }
+                else
+                {
+                    double pos = GetCurrentPosition();
+                    double newPos = Math.Max(0.0, pos - 10.0); // jump back 10 seconds
+                    player.controls.currentPosition = newPos;
+                }
+
                 try { UpdateProgressUI(); } catch { }
             }
             catch (Exception ex)
@@ -483,11 +536,20 @@ namespace ReproductorMúsica
             try
             {
                 // Stop playback and clear loaded file so user can upload another
-                if (player != null)
+                try
                 {
-                    try { player.controls.stop(); } catch { }
-                    try { player.close(); } catch { }
+                    if (mediaHelper != null)
+                    {
+                        mediaHelper.Stop();
+                        mediaHelper = null;
+                    }
+                    else if (player != null)
+                    {
+                        try { player.controls.stop(); } catch { }
+                        try { player.close(); } catch { }
+                    }
                 }
+                catch { }
 
                 isPlaying = false;
 
@@ -540,14 +602,23 @@ namespace ReproductorMúsica
                     try { player.settings.setMode("loop", isLooping); } catch { }
                 }
 
+                if (mediaHelper != null)
+                    mediaHelper.SetLoop(isLooping);
+
                 // Provide immediate feedback: if enabled and media loaded, restart playback from beginning
                 if (isLooping)
                 {
                     // ensure the mode is set; if media loaded restart
-                    if (player != null && !double.IsNaN(GetMediaDuration()))
+                    if ((mediaHelper != null || player != null) && !double.IsNaN(GetMediaDuration()))
                     {
-                        try { player.controls.currentPosition = 0; } catch { }
-                        try { player.controls.play(); isPlaying = true; } catch { }
+                        try
+                        {
+                            if (mediaHelper != null) mediaHelper.Seek(0);
+                            else if (player != null) player.controls.currentPosition = 0;
+                        }
+                        catch { }
+
+                        try { if (mediaHelper != null) mediaHelper.Play(); else if (player != null) player.controls.play(); isPlaying = true; } catch { }
                         try { this.Invoke((Action)(() => this.timer1.Start())); } catch { try { this.timer1.Start(); } catch { } }
                     }
                 }
@@ -566,14 +637,15 @@ namespace ReproductorMúsica
         {
             try
             {
-                if (player == null)
+                if (player == null && mediaHelper == null)
                     return;
 
                 // Set the player volume based on the track bar value
                 try
                 {
                     int vol = Math.Max(0, Math.Min(100, this.trbVolume.Value));
-                    player.settings.volume = vol;
+                    if (mediaHelper != null) mediaHelper.SetVolume(vol);
+                    else player.settings.volume = vol;
                 }
                 catch { }
             }
@@ -590,7 +662,11 @@ namespace ReproductorMúsica
                 // Set volume to 0 (mute)
                 try
                 {
-                    if (player != null)
+                    if (mediaHelper != null)
+                    {
+                        mediaHelper.SetVolume(0);
+                    }
+                    else if (player != null)
                     {
                         player.settings.volume = 0;
                     }
@@ -604,6 +680,11 @@ namespace ReproductorMúsica
             {
                 MessageBox.Show("Error al silenciar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void txtFileName_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
