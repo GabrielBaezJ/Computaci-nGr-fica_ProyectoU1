@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMusicPlayer));
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.btnReplay = new System.Windows.Forms.Button();
@@ -38,6 +39,9 @@
             this.picCanvas = new System.Windows.Forms.PictureBox();
             this.btnUpload = new System.Windows.Forms.Button();
             this.txtFileName = new System.Windows.Forms.TextBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.lblTimer = new System.Windows.Forms.Label();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.SuspendLayout();
             // 
@@ -92,6 +96,7 @@
             this.btnPlayPause.Size = new System.Drawing.Size(74, 75);
             this.btnPlayPause.TabIndex = 2;
             this.btnPlayPause.UseVisualStyleBackColor = true;
+            this.btnPlayPause.Click += new System.EventHandler(this.btnPlayPause_Click);
             // 
             // picCanvas
             // 
@@ -109,6 +114,7 @@
             this.btnUpload.Size = new System.Drawing.Size(47, 57);
             this.btnUpload.TabIndex = 7;
             this.btnUpload.UseVisualStyleBackColor = true;
+            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
             // 
             // txtFileName
             // 
@@ -118,11 +124,21 @@
             this.txtFileName.Size = new System.Drawing.Size(100, 20);
             this.txtFileName.TabIndex = 8;
             // 
+            // lblTimer
+            // 
+            this.lblTimer.AutoSize = true;
+            this.lblTimer.Location = new System.Drawing.Point(1064, 591);
+            this.lblTimer.Name = "lblTimer";
+            this.lblTimer.Size = new System.Drawing.Size(34, 13);
+            this.lblTimer.TabIndex = 9;
+            this.lblTimer.Text = "00:00";
+            // 
             // frmMusicPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1155, 687);
+            this.Controls.Add(this.lblTimer);
             this.Controls.Add(this.txtFileName);
             this.Controls.Add(this.btnUpload);
             this.Controls.Add(this.btnReplay);
@@ -155,5 +171,8 @@
         private System.Windows.Forms.Button btnReplay;
         private System.Windows.Forms.Button btnUpload;
         private System.Windows.Forms.TextBox txtFileName;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Label lblTimer;
+        private System.Windows.Forms.Timer timer2;
     }
 }

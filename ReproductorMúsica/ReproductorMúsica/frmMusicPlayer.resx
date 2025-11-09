@@ -121,7 +121,7 @@
   <data name="btnUpload.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABoAAAAzCAYAAACJ6RgwAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAH
-        YAAAB2ABR4RaUgAAAp9JREFUWEftmDtoFEEYx//RKBFENOCjsLWxspGoGKP4SqGx0sabOTHYaCGChQ8w
+        XwAAB18B6nbFFgAAAp9JREFUWEftmDtoFEEYx//RKBFENOCjsLWxspGoGKP4SqGx0sabOTHYaCGChQ8w
         hSCKiOITbCwEixTaKCTMHAcqWCiGkIgWNr7QysycaXzEke8ye9mbTCa3k7vK+8HH7nzz+O3tzs7uLdBk
         DuwEcD0irgFY6g4W4g6APwB+Z4wJAF3uYCFItAVAW8a4AKDHHSwEiTrcZA2cBJBzkyFiRUcAHHOTIWJF
         BwCccZMhYkXdAC65yRCxoo22b83EitYCeOAmQ8SKVgN44iZDxIqWAHjmJkOQ6BaAUxnjLIAvnnwSzCei
@@ -137,6 +137,12 @@
   </data>
   <metadata name="txtFileName.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
+  </metadata>
+  <metadata name="timer1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <metadata name="timer2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>105, 17</value>
   </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
