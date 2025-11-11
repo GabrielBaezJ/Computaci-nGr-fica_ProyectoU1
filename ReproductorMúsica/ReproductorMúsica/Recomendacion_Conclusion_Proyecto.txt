@@ -1,0 +1,15 @@
+Conclusiones
+
+El desarrollo del reproductor de música permitió integrar de forma efectiva los conceptos fundamentales de computación gráfica y programación orientada a eventos en C#. La implementación de transformaciones visuales sincronizadas con la reproducción de audio demostró cómo los principios matemáticos pueden aplicarse en la generación de animaciones dinámicas y atractivas.
+
+El uso del componente AxWindowsMediaPlayer facilitó la gestión de archivos de audio, mientras que el empleo de GDI+ proporcionó control sobre el dibujo y renderizado de elementos gráficos, garantizando fluidez en las animaciones. Además, la modularización mediante la clase CMediaPlayer promovió una estructura de código clara, reutilizable y fácil de mantener.
+
+El proyecto logró cumplir su objetivo de ofrecer una interfaz moderna, funcional y visualmente atractiva, capaz de combinar la reproducción de música con efectos visuales que mejoran la experiencia del usuario. Asimismo, se comprobó la importancia del manejo eficiente de los recursos gráficos y del control de excepciones para mantener la estabilidad de la aplicación.
+
+6. Recomendaciones
+
+Incorporar una biblioteca que permita vincular directamente las visualizaciones con las frecuencias del sonido, logrando una respuesta visual más precisa.
+
+Añadir soporte para redimensionamiento dinámico y temas personalizables, con el fin de mejorar la accesibilidad y la experiencia de usuario.
+
+Integrar un sistema de playlist y una función aleatorio aumentaría la funcionalidad y el atractivo del reproductor.
