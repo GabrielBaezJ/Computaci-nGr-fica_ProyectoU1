@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "C:\\Users\\Usuario\\Computaci-nGr-fica_ProyectoU1\\ReproductorM\u00FAsica\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8F1A3EF8-303D-433F-BF3C-02FA30277E93}|ReproductorM\u00FAsica\\ReproductorM\u00FAsica.csproj|C:\\Users\\Usuario\\Computaci-nGr-fica_ProyectoU1\\ReproductorM\u00FAsica\\reproductorm\u00FAsica\\cmediaplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8F1A3EF8-303D-433F-BF3C-02FA30277E93}|ReproductorM\u00FAsica\\ReproductorM\u00FAsica.csproj|c:\\users\\usuario\\computaci-ngr-fica_proyectou1\\reproductorm\u00FAsica\\reproductorm\u00FAsica\\cmediaplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8F1A3EF8-303D-433F-BF3C-02FA30277E93}|ReproductorM\u00FAsica\\ReproductorM\u00FAsica.csproj|solutionrelative:reproductorm\u00FAsica\\cmediaplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8F1A3EF8-303D-433F-BF3C-02FA30277E93}|ReproductorM\u00FAsica\\ReproductorM\u00FAsica.csproj|c:\\users\\usuario\\computaci-ngr-fica_proyectou1\\reproductorm\u00FAsica\\reproductorm\u00FAsica\\frmmusicplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{8F1A3EF8-303D-433F-BF3C-02FA30277E93}|ReproductorM\u00FAsica\\ReproductorM\u00FAsica.csproj|C:\\Users\\Usuario\\Computaci-nGr-fica_ProyectoU1\\ReproductorM\u00FAsica\\reproductorm\u00FAsica\\frmmusicplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{8F1A3EF8-303D-433F-BF3C-02FA30277E93}|ReproductorM\u00FAsica\\ReproductorM\u00FAsica.csproj|solutionrelative:reproductorm\u00FAsica\\frmmusicplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -32,7 +32,7 @@
               "RelativeDocumentMoniker": "ReproductorM\u00FAsica\\CMediaPlayer.cs",
               "ToolTip": "C:\\Users\\Usuario\\Computaci-nGr-fica_ProyectoU1\\ReproductorM\u00FAsica\\ReproductorM\u00FAsica\\CMediaPlayer.cs",
               "RelativeToolTip": "ReproductorM\u00FAsica\\CMediaPlayer.cs",
-              "ViewState": "AgIAACcCAAAAAAAAAADgv7cBAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAMQCAAAAAAAAAAAlwNYBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-09T02:17:48.602Z",
               "EditorCaption": ""
@@ -47,8 +47,7 @@
               "RelativeToolTip": "ReproductorM\u00FAsica\\frmMusicPlayer.cs",
               "ViewState": "AgIAAO8CAAAAAAAAAAAvwAMDAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-08T20:25:07.357Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-08T20:25:07.357Z"
             },
             {
               "$type": "Document",
@@ -59,8 +58,7 @@
               "ToolTip": "C:\\Users\\Usuario\\Computaci-nGr-fica_ProyectoU1\\ReproductorM\u00FAsica\\ReproductorM\u00FAsica\\frmMusicPlayer.cs [Dise\u00F1o]",
               "RelativeToolTip": "ReproductorM\u00FAsica\\frmMusicPlayer.cs [Dise\u00F1o]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-05T03:13:41.233Z",
-              "EditorCaption": " [Dise\u00F1o]"
+              "WhenOpened": "2025-11-05T03:13:41.233Z"
             }
           ]
         },

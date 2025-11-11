@@ -154,5 +154,8 @@
   <ItemGroup>
     <None Include="Resources\volumen.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Justificacion_Descripcion_Proyecto.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

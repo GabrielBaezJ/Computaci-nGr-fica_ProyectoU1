@@ -63,6 +63,8 @@ namespace ReproductorMúsica
         private float centerOffsetY = 0f;
         private float lowEnergy = 0f;
         private int beatCooldown = 0;
+        // bar visual scaling (higher = taller bars)
+        private float barScale = 1.6f;
 
         public string GetCurrentStyleName()
         {
@@ -431,9 +433,12 @@ namespace ReproductorMúsica
                 float x = i * barWidth;
                 float amp = spectrumSmooth[i];
 
-                // amplify transiently on beat
-                float ampBoost = 1f + beatPulse * (0.25f + (1f - i / (float)count) * 0.75f);
-                float barHeight = amp * h * 0.45f * ampBoost; // reduce to bottom half
+                // non-linear amplitude scaling to make bars more visible
+                // apply a power curve so small values still show, and add lowEnergy + beat boosts
+                float nonlinear = (float)Math.Pow(Math.Max(0f, amp), 0.6); // compress dynamics
+                float ampBoost = 1f + beatPulse * (0.35f + (1f - i / (float)count) * 0.65f);
+                float energyBoost = 1f + lowEnergy * 1.8f; // emphasize low-frequency energy
+                float barHeight = nonlinear * h * 0.6f * barScale * ampBoost * energyBoost; // larger range
 
                 // avoid zero-height rectangles which cause GDI+ exceptions
                 if (!(barHeight > 1f))
